@@ -14,9 +14,9 @@ out vec4 out_Col;
 #define SPEED 0.2
 #define PI 3.1415926
 
-const vec3 LIGHTPos1 = vec3(1.0, 5.0, 1.6);
-const vec3 LIGHTPos2 = vec3(-1.0, 5.0, 1.6);
-const vec3 LIGHTPos3 = vec3(-0.1, 5.0, -1.0);
+const vec3 LIGHTPos1 = vec3(-3.0, 8.0, -1.4);
+const vec3 LIGHTPos2 = vec3(-3.0, 8.0, 1.4);
+const vec3 LIGHTPos3 = vec3(2.0, 8.0, 0.0);
 const vec4 paperCol = vec4(225.0 / 255.0, 227.0 / 255.0, 221.0 / 255.0, 1.0);
 const float lineWidth = 0.05;
 
@@ -39,7 +39,7 @@ vec2 repeat(vec2 pos, float t){
     return r * vec2(cos(angle), sin(angle));
 }
 
-float smoothabs(float p, float k){
+float smoothabs(float p, float k) {
 	return sqrt(p * p + k * k) - k;
 }
 
@@ -72,7 +72,7 @@ float flower(vec3 pos) {
   vec3 p = pos;
   p.xz = rot(0.628) * p.xz;
   p.xz = repeat(p.xz, 5.0);
-  p.xy = rot(0.99) * p.xy;
+  p.xy = rot(1.05) * p.xy;
   p.y = abs(p.y);
   p.z = smoothabs(p.z, 0.01);
   float d = length(p - vec3(0.3889 * radius, -0.66116 * radius, -0.66116 * radius)) - radius;
@@ -82,7 +82,7 @@ float flower(vec3 pos) {
   p.xy = rot(0.75) * p.xy;
   p.y = abs(p.y);
   p.z = smoothabs(p.z, 0.01);
-  radius = 1.8;
+  radius = 1.5;
   d = min(d, length(p - vec3(0.3889 * radius, -0.66116 * radius, -0.66116 * radius)) - radius);
 
   p = pos;
@@ -217,7 +217,7 @@ vec4 rayMarch(vec3 ori, vec3 dir, bool ifBB) {
   float t;
   vec2 trange;
   if(ifBB) {
-    trange = checkBoundingBox(vec2(-2.0, 2.0), vec2(-0.5, 2.0), vec2(-2.0, 2.0), ori, dir);
+    trange = checkBoundingBox(vec2(-1.5, 1.5), vec2(-0.5, 2.0), vec2(-1.5, 1.5), ori, dir);
     if(trange.x == 0.0 && trange.y == 0.0) {
       return vec4(0.0);
     }
@@ -291,12 +291,12 @@ vec4 render(vec3 ori, vec3 dir, vec2 p) {
     diffuse += max(dot(nor, normalize(LIGHTPos2 - ip.yzw)), 0.0);
     diffuse += max(dot(nor, normalize(LIGHTPos3 - ip.yzw)), 0.0);
     diffuse = diffuse * 0.5 + 0.2;
-    float res = softshadow(ip.yzw, normalize(LIGHTPos1 - ip.yzw), 0.01, 2.0, 1.0);
-    res += softshadow(ip.yzw, normalize(LIGHTPos2 - ip.yzw), 0.01, 2.0, 1.0);
-    res += softshadow(ip.yzw, normalize(LIGHTPos3 - ip.yzw), 0.01, 2.0, 1.0);
+    float res = softshadow(ip.yzw, normalize(LIGHTPos1 - ip.yzw), 0.01, 2.0, 1.3);
+    res += softshadow(ip.yzw, normalize(LIGHTPos2 - ip.yzw), 0.01, 2.0, 1.3);
+    res += softshadow(ip.yzw, normalize(LIGHTPos3 - ip.yzw), 0.01, 2.0, 1.3);
     diffuse *= clamp(res, 0.0, 1.0); 
-    float h = clamp(max(sin(p.x * 720.0 + p.y * 570.0) * 0.5 + 0.5,
-                        sin(-p.x * 570.0 + p.y * 720.0) * 0.5 + 0.3) 
+    float h = clamp(max(sin(p.x * 620.0 + p.y * 470.0) * 0.5 + 0.5,
+                        sin(-p.x * 470.0 + p.y * 620.0) * 0.5 + 0.1) 
                      - diffuse, 0.0 ,1.0);
     col = mix(col, u_Color, h);
   }
