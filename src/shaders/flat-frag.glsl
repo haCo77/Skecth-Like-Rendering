@@ -14,9 +14,9 @@ out vec4 out_Col;
 #define SPEED 0.2
 #define PI 3.1415926
 
-const vec3 LIGHTPos1 = vec3(1.0, 4.0, 1.0);
-const vec3 LIGHTPos2 = vec3(-1.0, 3.0, 0.5);
-const vec3 LIGHTPos3 = vec3(1.0, 3.0, -0.8);
+const vec3 LIGHTPos1 = vec3(1.0, 5.0, 1.6);
+const vec3 LIGHTPos2 = vec3(-1.0, 5.0, 1.6);
+const vec3 LIGHTPos3 = vec3(-0.1, 5.0, -1.0);
 const vec4 paperCol = vec4(225.0 / 255.0, 227.0 / 255.0, 221.0 / 255.0, 1.0);
 const float lineWidth = 0.05;
 
@@ -291,9 +291,9 @@ vec4 render(vec3 ori, vec3 dir, vec2 p) {
     diffuse += max(dot(nor, normalize(LIGHTPos2 - ip.yzw)), 0.0);
     diffuse += max(dot(nor, normalize(LIGHTPos3 - ip.yzw)), 0.0);
     diffuse = diffuse * 0.5 + 0.2;
-    float res = softshadow(ip.yzw, normalize(LIGHTPos1 - ip.yzw), 0.01, 2.0, 2.0);
-    res += softshadow(ip.yzw, normalize(LIGHTPos2 - ip.yzw), 0.01, 2.0, 2.0);
-    res += softshadow(ip.yzw, normalize(LIGHTPos3 - ip.yzw), 0.01, 2.0, 2.0);
+    float res = softshadow(ip.yzw, normalize(LIGHTPos1 - ip.yzw), 0.01, 2.0, 1.0);
+    res += softshadow(ip.yzw, normalize(LIGHTPos2 - ip.yzw), 0.01, 2.0, 1.0);
+    res += softshadow(ip.yzw, normalize(LIGHTPos3 - ip.yzw), 0.01, 2.0, 1.0);
     diffuse *= clamp(res, 0.0, 1.0); 
     float h = clamp(max(sin(p.x * 720.0 + p.y * 570.0) * 0.5 + 0.5,
                         sin(-p.x * 570.0 + p.y * 720.0) * 0.5 + 0.3) 
