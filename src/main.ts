@@ -27,7 +27,7 @@ function loadScene() {
   screenQuad.create();
   paper = new Plane(vec3.fromValues(0,0,-0.31), vec2.fromValues(1.3, 1.3), 10);
   paper.create();
-  // time = 0;
+  time = 0;
 }
 
 function hexToRgb(hex: string) {
@@ -134,7 +134,7 @@ function main() {
       screenQuad,
     ], time);
     gl.flush();
-    //time += controls.Speed;
+    time += 1.0; //controls.Speed;
     //if(controls.color !== prevColor) {
     //  prevColor = controls.color;
     //  rgbColor = hexToRgb(prevColor);

@@ -6006,7 +6006,7 @@ function loadScene() {
     screenQuad.create();
     paper = new __WEBPACK_IMPORTED_MODULE_3__geometry_Plane__["a" /* default */](__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["c" /* vec3 */].fromValues(0, 0, -0.31), __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(1.3, 1.3), 10);
     paper.create();
-    // time = 0;
+    time = 0;
 }
 function hexToRgb(hex) {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -6092,7 +6092,7 @@ function main() {
             screenQuad,
         ], time);
         gl.flush();
-        //time += controls.Speed;
+        time += 1.0; //controls.Speed;
         //if(controls.color !== prevColor) {
         //  prevColor = controls.color;
         //  rgbColor = hexToRgb(prevColor);
@@ -16507,7 +16507,7 @@ module.exports = "#version 300 es\r\nprecision highp float;\r\n\r\nuniform vec3 
 /* 71 */
 /***/ (function(module, exports) {
 
-module.exports = "#version 300 es\r\nprecision highp float;\r\n\r\n// The vertex shader used to render the background of the scene\r\nuniform vec2 u_Dimensions;\r\nuniform mat4 u_ViewProj;\r\n\r\nin vec4 vs_Pos;\r\nin vec4 vs_Nor;\r\nin vec2 vs_UV;\r\nout vec4 fs_Nor;\r\nout vec4 fs_Pos;\r\nout vec2 fs_UV;\r\n\r\nvoid main() {\r\n  fs_Nor = vs_Nor;\r\n  fs_UV = vs_UV;\r\n  fs_Pos = vs_Pos;\r\n  gl_Position = u_ViewProj * vs_Pos;\r\n}"
+module.exports = "#version 300 es\r\nprecision highp float;\r\n\r\n// The vertex shader used to render the background of the scene\r\nuniform vec2 u_Dimensions;\r\nuniform mat4 u_ViewProj;\r\nuniform float u_Time;\r\n\r\nin vec4 vs_Pos;\r\nin vec4 vs_Nor;\r\nin vec2 vs_UV;\r\nout vec4 fs_Nor;\r\nout vec4 fs_Pos;\r\nout vec2 fs_UV;\r\n\r\nvoid main() {\r\n  fs_Nor = vs_Nor;\r\n  fs_UV = vs_UV;\r\n  fs_Pos = vs_Pos;\r\n  vec4 pos = vs_Pos;\r\n  pos.z += 0.03 * sin(0.5 * pos.y + u_Time * 0.05) * (0.65 - pos.y);\r\n  gl_Position = u_ViewProj * pos;\r\n}"
 
 /***/ }),
 /* 72 */
