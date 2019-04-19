@@ -14,9 +14,9 @@ out vec4 out_Col;
 #define SPEED 0.2
 #define PI 3.1415926
 
-const vec3 LIGHTPos1 = vec3(-3.0, 8.0, -1.4);
-const vec3 LIGHTPos2 = vec3(-3.0, 8.0, 1.4);
-const vec3 LIGHTPos3 = vec3(2.0, 8.0, 0.0);
+const vec3 LIGHTPos1 = vec3(-0.5, 3.0, -1.5);
+const vec3 LIGHTPos2 = vec3(0.8, 3.0, -1.5);
+const vec3 LIGHTPos3 = vec3(0.0, 3.0, -0.8);
 const vec4 paperCol = vec4(225.0 / 255.0, 227.0 / 255.0, 221.0 / 255.0, 1.0);
 const float lineWidth = 0.05;
 
@@ -68,18 +68,22 @@ float Box(vec3 p)
 }
 
 float flower(vec3 pos) {
+  pos.y += 0.5;
+  pos.yz = rot(-0.5) * pos.yz;
+
   float radius = 1.5;
   vec3 p = pos;
   p.xz = rot(0.628) * p.xz;
   p.xz = repeat(p.xz, 5.0);
-  p.xy = rot(1.05) * p.xy;
+  p.xy = rot(1.1) * p.xy;
   p.y = abs(p.y);
   p.z = smoothabs(p.z, 0.01);
   float d = length(p - vec3(0.3889 * radius, -0.66116 * radius, -0.66116 * radius)) - radius;
     
   p = pos;
+  p.xz = rot(0.15) * p.xz;
   p.xz = repeat(p.xz, 7.0);
-  p.xy = rot(0.75) * p.xy;
+  p.xy = rot(0.8) * p.xy;
   p.y = abs(p.y);
   p.z = smoothabs(p.z, 0.01);
   radius = 1.5;
@@ -106,6 +110,7 @@ vec3 calcNormal(vec3 x, float eps)
 
 vec2 minDist(vec3 pos) {
   float d = flower(pos);
+  pos.y += 0.6;
   if(d < pos.y || pos.y < -0.001)
     return vec2(d, 2.0);
   else {
@@ -189,13 +194,13 @@ vec2 checkBoundingBox(vec2 xrange, vec2 yrange, vec2 zrange, vec3 ori, vec3 dir)
           return vec2(min(f1, t2), max(f1, t2));
         }
         else {
-          return vec2(t2, t2);
+          return vec2(0.0, t2);
         }
       }
     }
   }
   if(first)
-    return vec2(f1, f1);
+    return vec2(0.0, f1);
   return vec2(0.0, 0.0);
 }
 
@@ -217,7 +222,8 @@ vec4 rayMarch(vec3 ori, vec3 dir, bool ifBB) {
   float t;
   vec2 trange;
   if(ifBB) {
-    trange = checkBoundingBox(vec2(-1.5, 1.5), vec2(-0.5, 2.0), vec2(-1.5, 1.5), ori, dir);
+    trange = checkBoundingBox(vec2(-2.0, 2.0), vec2(-1.5, 1.5), vec2(-2.0, 2.0), ori, dir);
+    // trange.x = 0.0; trange.y = 10.0;
     if(trange.x == 0.0 && trange.y == 0.0) {
       return vec4(0.0);
     }
@@ -291,12 +297,12 @@ vec4 render(vec3 ori, vec3 dir, vec2 p) {
     diffuse += max(dot(nor, normalize(LIGHTPos2 - ip.yzw)), 0.0);
     diffuse += max(dot(nor, normalize(LIGHTPos3 - ip.yzw)), 0.0);
     diffuse = diffuse * 0.5 + 0.2;
-    float res = softshadow(ip.yzw, normalize(LIGHTPos1 - ip.yzw), 0.01, 2.0, 1.3);
-    res += softshadow(ip.yzw, normalize(LIGHTPos2 - ip.yzw), 0.01, 2.0, 1.3);
-    res += softshadow(ip.yzw, normalize(LIGHTPos3 - ip.yzw), 0.01, 2.0, 1.3);
+    float res = softshadow(ip.yzw, normalize(LIGHTPos1 - ip.yzw), 0.01, 2.0, 1.4);
+    res += softshadow(ip.yzw, normalize(LIGHTPos2 - ip.yzw), 0.01, 2.0, 1.4);
+    res += softshadow(ip.yzw, normalize(LIGHTPos3 - ip.yzw), 0.01, 2.0, 1.4);
     diffuse *= clamp(res, 0.0, 1.0); 
-    float h = clamp(max(sin(p.x * 620.0 + p.y * 470.0) * 0.5 + 0.5,
-                        sin(-p.x * 470.0 + p.y * 620.0) * 0.5 + 0.1) 
+    float h = clamp(max(sin(p.x * 240.0 + p.y * 160.0) * 0.5 + 0.4,
+                        sin(-p.x * 160.0 + p.y * 240.0) * 0.5 - 0.05) 
                      - diffuse, 0.0 ,1.0);
     col = mix(col, u_Color, h);
   }
@@ -304,10 +310,12 @@ vec4 render(vec3 ori, vec3 dir, vec2 p) {
 }
 
 void main() {
-  float len = length(u_Ref - u_Eye);
-  vec3 H = normalize(cross(u_Ref - u_Eye, u_Up)) * len * u_Dimensions.x / u_Dimensions.y;
+  vec3 ori = u_Eye;
+  // ori = normalize(ori + vec3(0.0, 0.0, -3.0)) * 3.0;
+  float len = length(u_Ref - ori);
+  vec3 H = normalize(cross(u_Ref - ori, u_Up)) * len; // * u_Dimensions.x / u_Dimensions.y;
   // vec2 delta = vec2(2.0 / u_Dimensions.x, 2.0 / u_Dimensions.y);
-  vec4 color = render(u_Eye, getDir(H, len, fs_Pos), fs_Pos);
+  vec4 color = render(ori, getDir(H, len, fs_Pos), fs_Pos);
 
   out_Col = color;
 }
