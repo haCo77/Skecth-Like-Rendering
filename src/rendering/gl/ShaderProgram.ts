@@ -34,6 +34,7 @@ class ShaderProgram {
   unifTime: WebGLUniformLocation;
   unifColor: WebGLUniformLocation;
   unifSampler2D: WebGLUniformLocation;
+  unifSampler2D2: WebGLUniformLocation;
 
   constructor(shaders: Array<Shader>) {
     this.prog = gl.createProgram();
@@ -57,6 +58,7 @@ class ShaderProgram {
     this.unifTime   = gl.getUniformLocation(this.prog, "u_Time");
     this.unifColor      = gl.getUniformLocation(this.prog, "u_Color");
     this.unifSampler2D  = gl.getUniformLocation(this.prog, "u_Texture1");
+    this.unifSampler2D2  = gl.getUniformLocation(this.prog, "u_Texture2");
   }
 
   use() {
@@ -113,6 +115,11 @@ class ShaderProgram {
     if(this.unifSampler2D != -1)
     {
         gl.uniform1i(this.unifSampler2D, /*GL_TEXTURE*/0);
+    }
+
+    if(this.unifSampler2D2 != -1)
+    {
+        gl.uniform1i(this.unifSampler2D2, /*GL_TEXTURE*/1);
     }
 
     if (this.attrPos != -1 && d.bindPos()) {

@@ -14,8 +14,8 @@ out vec4 out_Col;
 #define SPEED 0.2
 #define PI 3.1415926
 
-const vec3 LIGHTPos1 = vec3(-0.5, 3.0, -1.5);
-const vec3 LIGHTPos2 = vec3(0.8, 3.0, -1.5);
+const vec3 LIGHTPos1 = vec3(0.5, 3.0, -1.5);
+const vec3 LIGHTPos2 = vec3(-0.8, 3.0, -1.5);
 const vec3 LIGHTPos3 = vec3(0.0, 3.0, -0.8);
 const vec4 paperCol = vec4(225.0 / 255.0, 227.0 / 255.0, 221.0 / 255.0, 1.0);
 const float lineWidth = 0.05;
@@ -255,7 +255,7 @@ vec4 rayMarch(vec3 ori, vec3 dir, bool ifBB) {
 }
 
 vec3 getDir(vec3 H, float len, vec2 coord) {
-  return normalize(u_Ref - u_Eye + coord.x * H + coord.y * u_Up * len);
+  return normalize(u_Ref - normalize(u_Eye) * 2.5 + coord.x * H + coord.y * u_Up * len);
 }
 
 vec4 render(vec3 ori, vec3 dir, vec2 p) {
@@ -290,7 +290,7 @@ vec4 render(vec3 ori, vec3 dir, vec2 p) {
     }
   } else {
     nor = vec3(0.0, 1.0, 0.0);
-    col = paperCol + vec4(0.05, 0.05, 0.05, 0.0);
+    col = paperCol;// + vec4(0.05, 0.05, 0.05, 0.0);
   }
   if(nor.x != 0.0 || nor.y != 0.0 || nor.z != 0.0) {
     float diffuse = max(dot(nor, normalize(LIGHTPos1 - ip.yzw)), 0.0);
@@ -311,7 +311,7 @@ vec4 render(vec3 ori, vec3 dir, vec2 p) {
 
 void main() {
   vec3 ori = u_Eye;
-  // ori = normalize(ori + vec3(0.0, 0.0, -3.0)) * 3.0;
+  ori = normalize(ori) * 2.5;
   float len = length(u_Ref - ori);
   vec3 H = normalize(cross(u_Ref - ori, u_Up)) * len; // * u_Dimensions.x / u_Dimensions.y;
   // vec2 delta = vec2(2.0 / u_Dimensions.x, 2.0 / u_Dimensions.y);

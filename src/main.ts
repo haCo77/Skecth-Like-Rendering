@@ -8,6 +8,8 @@ import OpenGLRenderer from './rendering/gl/OpenGLRenderer';
 import Camera from './Camera';
 import {setGL} from './globals';
 import ShaderProgram, {Shader} from './rendering/gl/ShaderProgram';
+import {readTextFile} from './globals';
+import {loadTexture} from './Texture';
 
 // Define an object with application parameters and button callbacks
 // This will be referred to by dat.GUI's functions that add GUI elements.
@@ -79,7 +81,9 @@ function main() {
   // prevColor = "#ff0000";
   // var rgbColor = hexToRgb(prevColor);
 
-  const camera = new Camera(vec3.fromValues(0, 0, -2.5), vec3.fromValues(0, 0, 0));
+  const camera = new Camera(vec3.fromValues(-0.4, 1.522, -2.09), vec3.fromValues(0, 0, 0));
+  camera.controls.up = vec4.fromValues(0.11, -0.808, -0.612, 0.0);
+  camera.controls.tick();
 
   const renderer = new OpenGLRenderer(canvas);
   renderer.setClearColor(185.0 / 255.0, 187.0 / 255.0, 181.0 / 255.0, 1);
@@ -91,11 +95,18 @@ function main() {
   ]);
   flat.setGeometryColor(vec4.fromValues(107.0 / 255, 107.0 / 255, 107.0 / 255, 1));
 
-  const env = new ShaderProgram([
-    new Shader(gl.VERTEX_SHADER, require('./shaders/env-vert.glsl')),
-    new Shader(gl.FRAGMENT_SHADER, require('./shaders/env-frag.glsl')),
+ // const env = new ShaderProgram([
+ //   new Shader(gl.VERTEX_SHADER, require('./shaders/env-vert.glsl')),
+ //   new Shader(gl.FRAGMENT_SHADER, require('./shaders/env-frag.glsl')),
+ // ]);
+
+  const env2 = new ShaderProgram([
+    new Shader(gl.VERTEX_SHADER, require('./shaders/env2-vert.glsl')),
+    new Shader(gl.FRAGMENT_SHADER, require('./shaders/env2-frag.glsl')),
   ]);
-////
+
+  const texture = loadTexture(gl, './src/resources/texture.jpg');
+
   const renderTexture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, renderTexture);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,
@@ -116,7 +127,7 @@ function main() {
     gl.TEXTURE_2D,
     renderTexture,
     0);
-////
+
 
   function processKeyPresses() {
     // Use this if you wish
@@ -145,8 +156,10 @@ function main() {
     renderer.clear();
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, renderTexture);
-    renderer.render(camera, env, [
-      paper,
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    renderer.render(camera, env2, [
+      screenQuad,
     ], time);
     stats.end();
     // Tell the browser to call `tick` again whenever it renders a new frame
@@ -158,12 +171,14 @@ function main() {
     camera.setAspectRatio(window.innerWidth / window.innerHeight);
     camera.updateProjectionMatrix();
     flat.setDimensions(window.innerWidth, window.innerHeight);
+    env2.setDimensions(window.innerWidth, window.innerHeight);
   }, false);
 
   renderer.setSize(window.innerWidth, window.innerHeight);
   camera.setAspectRatio(window.innerWidth / window.innerHeight);
   camera.updateProjectionMatrix();
   flat.setDimensions(window.innerWidth, window.innerHeight);
+  env2.setDimensions(window.innerWidth, window.innerHeight);
 
   // Start the render loop
   tick();
