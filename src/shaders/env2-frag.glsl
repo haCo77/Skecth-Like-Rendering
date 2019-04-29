@@ -361,8 +361,15 @@ void main() {
   // ori = normalize(ori + vec3(0.0, 0.0, -3.0)) * 3.0;
   float len = length(u_Ref - ori);
   vec3 H = normalize(cross(u_Ref - ori, u_Up)) * len * u_Dimensions.x / u_Dimensions.y;
-  // vec2 delta = vec2(2.0 / u_Dimensions.x, 2.0 / u_Dimensions.y);
-  vec4 color = render(ori, getDir(H, len, fs_Pos), fs_Pos);
+  vec2 delta = vec2(1.0 / u_Dimensions.x, 1.0 / u_Dimensions.y);
 
+  vec4 color = render(ori, getDir(H, len, fs_Pos), fs_Pos);
+  /*
+  // AA
+  color += render(ori, getDir(H, len, fs_Pos + delta * vec2(0.0, 1.0)), fs_Pos + delta * vec2(0.0, 1.0));
+  color += render(ori, getDir(H, len, fs_Pos + delta * vec2(1.0, 0.0)), fs_Pos + delta * vec2(1.0, 0.0));
+  color += render(ori, getDir(H, len, fs_Pos + delta * vec2(1.0, 1.0)), fs_Pos + delta * vec2(1.0, 1.0));
+  color *= 0.25;
+  */
   out_Col = color;
 }
